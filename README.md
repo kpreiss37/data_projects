@@ -2,10 +2,13 @@
 
 A collection of data projects, including end to end pipelines with REST APIs, BigQuery queries transforming data into analytics ready tables, and ML models.
 
-## Projects
+### Men's college basketball pipeline and prediction model
 
-### Men's College Basketball 
-Built an end-to-end data pipeline to ingest data from multiple REST API endpoints into BigQuery, where it was transformed into a matchup-level dataset with team performance metrics. Developed a machine learning model using BigQuery ML to predict the home team’s margin of victory, enabling game-level forecasting and exploratory analysis.
+Built an end-to-end data pipeline ingesting from multiple College Basketball Data API endpoints into BigQuery, covering games, team ratings, four-factor stats, and betting lines, each on independent ingestion schedules.
+
+The core modeling challenge was temporal: each game needed to be joined to the most recent ratings and stats available before it was played, not season-end figures. This required a point-in-time join pattern using ingestion timestamps, adding meaningful complexity to the feature engineering SQL.
+
+The assembled dataset includes adjusted offensive and defensive ratings, four factors (eFG%, free throw rate, offensive rebounding rate, turnover ratio), days of rest, rolling win percentage over the last five games, and the Vegas spread. A linear regression model trained in BigQuery ML to predict home team margin of victory achieves an R² of 0.29, with the caveat that the pipeline was completed late in the season so historical snapshots were limited. The ingestion layer is already designed to accumulate snapshots via append-only loads, so the point-in-time logic will work as intended with a full season of data. The plan is to run it in full for 2026 and scale from there.
 
 **Tools:** Python, BigQuery, SQL, BigQuery ML
 
@@ -21,8 +24,12 @@ Designed a data pipeline using Hevo to ingest project management data from Wrike
 
 **Tools:** Hevo, Bigquery, SQL, Google Data Studio
 
-## About Me
+## About me
 
-Data Analyst in digital marketing with experience building data pipelines, modeling datasets, and delivering insights to stakeholders. Interested in data engineering and sports analytics.
+Data analyst with a habit of building the pipeline before writing the query. I work across the full stack of a data project, from REST API ingestion and BigQuery modeling to dashboards and ML, and I'm equally comfortable talking about infrastructure decisions and business impact with stakeholders.
+
+My background is in digital marketing analytics, where I've built attribution models, utilization reporting, and data pipelines that inform real budget and resourcing decisions. Outside of work, I apply the same toolkit to sports data, where the feedback loops are tighter and the questions are more fun to argue about.
+
+I'm drawn to roles where the data engineering and the analysis aren't separate jobs, where building something right and making it useful are the same problem.
 
 Find me on [LinkedIn](https://linkedin.com/in/kevin-preiss)

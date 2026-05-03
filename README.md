@@ -4,21 +4,21 @@ A collection of end-to-end data projects spanning pipeline engineering, analytic
 
 ## Projects
 
-### [Men's college basketball pipeline and prediction model](./college_basketball_pipeline/)
+### [Men's college basketball pipeline and prediction model](https://github.com/kpreiss37/data_projects/college_basketball_pipeline/)
 Built a full ingestion and modeling pipeline on top of the College Basketball Data API, transforming raw game, rating, and betting line data into a point-in-time matchup dataset. Trained a BigQuery ML linear regression model to predict home team margin of victory.
 
 **Tools:** Python, BigQuery, SQL, BigQuery ML
 
 ---
 
-### [Multitouch marketing attribution](./ga4_multitouch_attribution/)
+### [Multitouch marketing attribution](https://github.com/kpreiss37/data_projects/ga4_multitouch_attribution/)
 Built a time-decay attribution pipeline in BigQuery stitching together GA4 session data, CallRail phone events, and form submissions to construct user-level touchpoint paths. Matched users to closed invoices and distributed revenue credit across all touchpoints proportional to proximity to conversion.
 
 **Tools:** BigQuery, SQL, GA4, CallRail, Hevo
 
 ---
 
-### [Wrike utilization reporting](./wrike_utilization/)
+### [Wrike utilization reporting](https://github.com/kpreiss37/data_projects/wrike_utilization/)
 Designed a pipeline to ingest Wrike project management data into BigQuery and modeled task, user, and custom field tables into a standardized effort rating metric. Powered a leadership dashboard for analyzing budgeted vs. actual time across users, clients, and departments.
 
 **Tools:** Hevo, BigQuery, SQL, Google Data Studio

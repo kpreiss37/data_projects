@@ -4,7 +4,7 @@ A collection of data projects, including end to end pipelines with REST APIs, Bi
 
 ## Projects
 
-### Men's College Basketball (MBB)
+### Men's College Basketball 
 Built an end-to-end data pipeline to ingest data from multiple REST API endpoints into BigQuery, where it was transformed into a matchup-level dataset with team performance metrics. Developed a machine learning model using BigQuery ML to predict the home team’s margin of victory, enabling game-level forecasting and exploratory analysis.
 
 **Tools:** Python, BigQuery, SQL, BigQuery ML

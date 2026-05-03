@@ -134,8 +134,11 @@ i.total,
 1 AS sale_flag
 FROM PROJECT.DATASET.client_touchpaths t
 LEFT JOIN cleaned_invoices i
-ON i.customer_phone IN(t.phone_numbers) AND i.customer_phone != ''
-OR i.customer_email IN(t.emails) AND i.customer_email != ''
+ON (
+  (i.customer_phone IN UNNEST(t.phone_numbers) AND i.customer_phone != '')
+  OR
+  (i.customer_email IN UNNEST(t.emails) AND i.customer_email != '')
+)
 WHERE i.invoice_date IS NULL OR t.event_date < i.invoice_date
 
 ;

@@ -25,4 +25,4 @@ Designed a data pipeline using Hevo to ingest project management data from Wrike
 
 Data Analyst in digital marketing with experience building data pipelines, modeling datasets, and delivering insights to stakeholders. Interested in data engineering and sports analytics.
 
-Find me on [LinkedIn](linkedin.com/in/kevin-preiss)
+Find me on [LinkedIn](https://linkedin.com/in/kevin-preiss)

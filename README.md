@@ -12,7 +12,7 @@ Built an end-to-end data pipeline to ingest data from multiple REST API endpoint
 ### Multitouch Marketing Attribution
 Built a three-stage attribution pipeline in BigQuery that stitches together GA4 session data, CallRail phone call events, and form submission leads to construct a full touchpoint path for each user. Matched users to closed invoices from a CRM via cleaned phone numbers and email addresses, then applied a time-decay model to distribute revenue credit across all touchpoints proportional to their proximity to conversion.
 
-This model is intentionally directional — cookie-based tracking has inherent gaps, and the user-level stitching across channels is probabilistic rather than deterministic. That said, it has had real business impact: by surfacing credit across the full conversion path, it demonstrated the value of upper-funnel awareness campaigns that are systematically undercredited in last-touch attribution models, directly informing paid media budget decisions.
+This model is intentionally directional. Cookie-based tracking has inherent gaps, and the user-level stitching across channels is probabilistic rather than deterministic. That said, it has had real business impact: by surfacing credit across the full conversion path, it demonstrated the value of upper-funnel awareness campaigns that are systematically undercredited in last-touch attribution models, directly informing paid media budget decisions.
 
 **Tools:** BigQuery, SQL, GA4, CallRail
 

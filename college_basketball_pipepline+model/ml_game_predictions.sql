@@ -4,7 +4,7 @@ model_type='linear_reg',
 input_label_cols=['home_team_margin']
 ) AS
 SELECT
-home_net_diff
+home_net_diff,
 home_game,
 rest_diff,
 form_diff,

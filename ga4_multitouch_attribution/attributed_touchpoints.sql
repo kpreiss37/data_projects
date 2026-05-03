@@ -121,8 +121,7 @@ WITH cleaned_invoices AS (
   invoice_date,
   total,
   RIGHT(REGEXP_REPLACE(customer_phone, r'[\s\(\)\-\+]', ''), 10) AS customer_phone,
-  LOWER(customer_email) customer_email,
-
+  LOWER(customer_email) customer_email
   FROM PROJECT.DATASET.client_invoices
   WHERE total > 0
 )

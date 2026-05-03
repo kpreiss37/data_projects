@@ -5,17 +5,17 @@ A collection of data projects, including end to end pipelines with REST APIs, Bi
 ## Projects
 
 ### Men's College Basketball (MBB)
-This project extracts data from multiple endpoints of a college basketball API, loads it into a BigQuery instance where I transform it into a matchup table with a variety of team stats attached. I used this table to create an ML model to predict the home team's margin of victory/defeat.
+Built an end-to-end data pipeline to ingest data from multiple REST API endpoints into BigQuery, where it was transformed into a matchup-level dataset with team performance metrics. Developed a machine learning model to predict home team margin of victory using BigQuery ML. Given the inherent variance in game outcomes, the model achieved an R² of 0.29 on a holdout set and was primarily used for exploratory analysis and matchup evaluation.
 
 **Tools:** Python, BigQuery, SQL, BigQuery ML
 
 ### Wrike
-This project uses Hevo to extract data from Wrike (Project management tool) and loads it into BigQuery. Once in BigQuery, I join the main tasks table with key tables to bring in custom field definitions and user names and create a metric to define a task's effort rating based on the business' definition. This data is the backbone of a Google Data Studio dashboard for high level executives to be able to evaluate budgeted time by user, client, and department.
+Designed a data pipeline using Hevo to ingest project management data from Wrike into BigQuery. Modeled and joined task, user, and custom field tables to create a standardized “effort rating” metric aligned with business logic. Powered a Google Data Studio dashboard used by leadership to analyze budgeted time across users, clients, and departments.
 
 **Tools:** Hevo, Bigquery, SQL, Google Data Studio
 
 ## About Me
 
-Current Data analyst working in digital marketing with a passion for sports analytics and data engineering.
+Data Analyst in digital marketing with experience building data pipelines, modeling datasets, and delivering insights to stakeholders. Interested in data engineering and sports analytics.
 
 Find me on [LinkedIn](linkedin.com/in/kevin-preiss)

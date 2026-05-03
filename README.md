@@ -1,6 +1,6 @@
 # Data Projects
 
-A selection of data projects I have worked on, including analysis, engineering, and modeling.
+A collection of data projects, including end to end pipelines with REST APIs, BigQuery queries transforming data into analytics ready tables, and ML models.
 
 ## Projects
 

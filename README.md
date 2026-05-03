@@ -18,4 +18,4 @@ This project uses Hevo to extract data from Wrike (Project management tool) and 
 
 Current Data analyst working in digital marketing with a passion for sports analytics and data engineering.
 
-Find me at [linkedin.com/in/kevin-preiss]
+Find me on [LinkedIn](linkedin.com/in/kevin-preiss)

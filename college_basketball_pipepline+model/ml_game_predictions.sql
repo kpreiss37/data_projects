@@ -40,7 +40,7 @@ home_team_margin,
 FROM ML.PREDICT(MODEL `mbb.rating_regression`,
   (
       SELECT
-      home_net_diff
+      home_net_diff,
       home_game,
       rest_diff,
       form_diff,

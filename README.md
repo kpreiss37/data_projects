@@ -27,8 +27,6 @@ Designed a pipeline to ingest Wrike project management data into BigQuery and mo
 
 ## About me
 
-Data analyst with a habit of building the pipeline before writing the query. I work across the full stack of a data project, from REST API ingestion and BigQuery modeling to dashboards and ML, and I'm equally comfortable talking about infrastructure decisions and business impact with stakeholders.
-
 My background is in digital marketing analytics, where I've built attribution models, utilization reporting, and data pipelines that inform real budget and resourcing decisions. Outside of work, I apply the same toolkit to sports data, where the feedback loops are tighter and the questions are more fun to argue about.
 
 I'm drawn to roles where the data engineering and the analysis aren't separate jobs, where building something right and making it useful are the same problem.

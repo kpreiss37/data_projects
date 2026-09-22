@@ -1,0 +1,4 @@
+requests
+pandas
+pandas-gbq
+google-auth

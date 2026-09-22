@@ -2,19 +2,26 @@ import os
 import json
 import requests
 import pandas as pd
+import pandas_gbq
 from datetime import datetime
 import google.auth
 
 credentials, project = google.auth.default()
+
+today = datetime.now()
+
+season_start_year = today.year if today.month >= 5 else today.year - 1
+
+destination_table_dynamic = f"mbb.games_{season_start_year}"
 
 headers = {
     'Authorization': f"Bearer {os.environ['CBBD_API_KEY']}"
 }
 
 date_ranges = [
-    "2025-10-01",
-    "2026-01-06",
-    "2026-03-08"
+    f"{season_start_year}-10-01",
+    f"{season_start_year + 1}-01-06",
+    f"{season_start_year + 1}-03-08"
 ]
 
 all_records = []
@@ -31,9 +38,10 @@ print(f"\nTotal records: {len(all_records)}")
 df = pd.DataFrame(all_records)
 df["homePeriodPoints"] = df["homePeriodPoints"].apply(json.dumps)
 df["awayPeriodPoints"] = df["awayPeriodPoints"].apply(json.dumps)
-df.to_gbq(
-    destination_table="TABLE",
-    project_id="PROJECT ID",
+pandas_gbq.to_gbq(
+    df,
+    destination_table = destination_table_dynamic,
+    project_id="project-bf3ebdef-3dea-4c35-a21",
     if_exists="replace",
     credentials=credentials
 )

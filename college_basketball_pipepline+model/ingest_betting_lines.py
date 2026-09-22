@@ -2,6 +2,7 @@ import os
 import json
 import requests
 import pandas as pd
+import pandas_gbq
 from datetime import datetime
 import google.auth
 
@@ -68,9 +69,10 @@ for record in all_records:
         })
 
 df = pd.DataFrame(exploded)
-df.to_gbq(
-    destination_table="TABLE",
-    project_id="PROJECT ID",
+pandas_gbq.to_gbq(
+    df,
+    destination_table="mbb.lines",
+    project_id="project-bf3ebdef-3dea-4c35-a21",
     if_exists="replace",
     credentials=credentials
 )

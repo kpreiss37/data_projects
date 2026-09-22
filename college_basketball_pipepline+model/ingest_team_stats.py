@@ -1,8 +1,10 @@
 import os
 import requests
 import pandas as pd
+import pandas_gbq
 from datetime import datetime, timedelta
 import google.auth
+import sys
 
 credentials, project = google.auth.default()
 
@@ -25,12 +27,17 @@ for start_date in date_ranges:
 
 print(f"\nTotal records: {len(all_records)}")
 
+if len(all_records) == 0:
+    print("No records returned, nothing to ingest. Exiting.")
+    sys.exit(0)
+
 df = pd.json_normalize(all_records)
 df.columns = df.columns.str.replace(".", "_", regex=False)
 df["ingested_at"] = datetime.today().strftime("%Y-%m-%d")
-df.to_gbq(
-    destination_table="TABLE",
-    project_id="PROJECT ID",
+pandas_gbq.to_gbq(
+    df,
+    destination_table="mbb.team_stats",
+    project_id="project-bf3ebdef-3dea-4c35-a21",
     if_exists="append",
     credentials=credentials
 )

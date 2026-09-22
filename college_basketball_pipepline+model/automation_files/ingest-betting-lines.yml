@@ -1,0 +1,37 @@
+name: Ingest Betting Lines
+
+on:
+  schedule:
+    - cron: '12 5 * * *'
+  workflow_dispatch: {}
+
+jobs:
+  ingest:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write
+      contents: read
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install dependencies
+        run: pip install -r "requirements.txt"
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          workload_identity_provider: ${{ secrets.GCP_WORKLOAD_IDENTITY_PROVIDER }}
+          service_account: ${{ secrets.GCP_SERVICE_ACCOUNT_EMAIL }}
+          # --- Alternative: Service Account Key JSON (requires org policy allowing key creation) ---
+          # credentials_json: ${{ secrets.GCP_SA_KEY }}
+
+      - name: Run ingestion script
+        env:
+          CBBD_API_KEY: ${{ secrets.CBBD_API_KEY }}
+        run: python "ingest_betting_lines.py"

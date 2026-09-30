@@ -8,6 +8,8 @@ import sys
 
 credentials, project = google.auth.default()
 
+today = datetime.now()
+
 season_start_year = today.year if today.month >= 5 else today.year - 1
 
 headers = {

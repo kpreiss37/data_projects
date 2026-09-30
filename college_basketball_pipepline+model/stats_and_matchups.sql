@@ -1,4 +1,4 @@
-CREATE OR REPLACE TABLE `project-bf3ebdef-3dea-4c35-a21.mbb.games` AS 
+CREATE OR REPLACE TABLE `project-bf3ebdef-3dea-4c35-a21.mbb.all_games` AS 
 
 WITH unioned AS (
     SELECT 
@@ -18,7 +18,7 @@ WITH unioned AS (
         CAST(hometeamelostart AS INT64) - CAST(awayteamelostart AS INT64) AS home_elo_diff,
         ROW_NUMBER() OVER (PARTITION BY id) AS game_row_num
     FROM `project-bf3ebdef-3dea-4c35-a21.mbb.games_*`
-    WHERE _TABLE_SUFFIX >= 2026
+    WHERE CAST(_TABLE_SUFFIX AS FLOAT64) >= 2026
       AND status NOT IN ('postponed', 'cancelled')
 )
 
@@ -28,12 +28,12 @@ FROM unioned
 WHERE game_row_num = 1
 ;
 
-CREATE OR REPLACE TABLE `project-bf3ebdef-3dea-4c35-a21.mbb.games_rated` AS 
+CREATE OR REPLACE TABLE `project-bf3ebdef-3dea-4c35-a21.mbb.all_games_rated` AS 
 
 WITH deduped AS (
     SELECT 
     *
-    FROM `project-bf3ebdef-3dea-4c35-a21.mbb.games` 
+    FROM `project-bf3ebdef-3dea-4c35-a21.mbb.all_games` 
     WHERE status NOT IN ('postponed', 'cancelled')
 )
 
@@ -199,10 +199,7 @@ LEFT JOIN away_form af
     ON r.id = af.game_id
     AND r.away_team_id = af.team_id
 WHERE r.game_row_num = 1
-/*AND home_off_rat IS NOT NULL
-AND home_def_rat IS NOT NULL
-AND away_off_rat IS NOT NULL
-AND away_def_rat IS NOT NULL*/
+
 
 
 

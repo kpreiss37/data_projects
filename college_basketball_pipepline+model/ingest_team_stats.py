@@ -16,9 +16,13 @@ date_ranges = [
     (datetime.today() + timedelta(days=-21)).strftime("%Y-%m-%d")
 ]
 
+today = datetime.now()
+
+season_start_year = today.year if today.month >= 5 else today.year - 1
+
 all_records = []
 for start_date in date_ranges:
-    url = f"https://api.collegebasketballdata.com/stats/team/season?startDateRange={start_date}&season=2026"
+    url = f"https://api.collegebasketballdata.com/stats/team/season?startDateRange={start_date}&season={season_start_year}"
     response = requests.get(url, headers=headers)
     response.raise_for_status()
     data = response.json()
@@ -38,7 +42,7 @@ pandas_gbq.to_gbq(
     df,
     destination_table="mbb.team_stats",
     project_id="project-bf3ebdef-3dea-4c35-a21",
-    if_exists="append",
+    if_exists="replace",
     credentials=credentials
 )
 print(f"Done! Loaded {len(df)} records into BigQuery")

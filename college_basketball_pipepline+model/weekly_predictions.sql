@@ -24,19 +24,19 @@ END AS bet
 FROM ML.PREDICT(MODEL `mbb.rating_regression`,
    (
        SELECT
-       home_net_diff
-       home_game,
-       rest_diff,
-       form_diff,
-       home_team_margin,
-       home_team,
-       away_team,
-       spread,
-       start_date,
-       fg_perc_diff,
-       ft_rate_diff,
-       orb_perc_diff,
-       to_ratio_diff
+    -- Team strength features
+    team_strength_features,
+
+    -- Game context
+    game_context_features,
+
+    -- Recent performance
+    form_features,
+
+    -- Efficiency metrics
+    efficiency_features,
+
+    home_team_margin
        FROM `project-bf3ebdef-3dea-4c35-a21.mbb.all_games_rated`
        WHERE 1=1
        AND DATE_DIFF(start_date,CURRENT_DATE('America/New_York'), DAY) BETWEEN 0 and 7

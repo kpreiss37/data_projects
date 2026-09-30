@@ -28,9 +28,11 @@ The final dataset includes:
 
 ## Model
 
-A linear regression model was trained in BigQuery ML (`ml_game_predictions.sql`) to predict the home team's margin of victory. Games with margins greater than 35 points and teams with default ELO ratings were excluded from training to reduce noise.
+A linear regression model was trained in BigQuery ML (`ml_model.sql`) to predict the home team's margin of victory. Games with margins greater than 35 points were excluded from training to reduce noise.
 
-The model achieves an R² of 0.29. The main caveat is that the pipeline was completed late in the 2025 season, so historical rating snapshots were limited for earlier games. The ingestion layer is already designed to accumulate snapshots via append-only loads, so the point-in-time join logic will work as intended with a full season of data. The plan is to run it in full for 2026 and evaluate properly against the spread.
+This model was first made at the tail end of the 2025 season, but with limited historical data on ratings and team stats, the model achieved an R² of 0.29.
+
+Since the end of the season, I've spent time making sure that the model will be fully automated for future years so the dataset can continuously grow. You can view this season's performance in this [Google Data Studio dashboard](https://datastudio.google.com/reporting/bfc031e1-ad85-4daa-9521-8fd2e26a3e90).
 
 ## Files
 
@@ -41,8 +43,11 @@ The model achieves an R² of 0.29. The main caveat is that the pipeline was comp
 | `ingest_team_stats.py` | Pulls four-factor stats and appends with ingestion timestamp |
 | `ingest_betting_lines.py` | Pulls betting lines and explodes nested structure into flat table |
 | `stats_and_matchups.sql` | Point-in-time feature engineering and matchup assembly |
-| `ml_game_predictions.sql` | BigQuery ML model training and prediction queries |
+| `ml_model.sql` | BigQuery ML model training and prediction queries |
+| `historical_prediction_performance.sql` | Takes the models prediction before the game is played and evaluates it against actual data the next day |
+| `weekly_predictions.sql` | A rolling 7 day window of predictions from the model |
+| `requirements.txt` | Libraries to be installed for automating scripts | 
 
 ## Tools
 
-Python, BigQuery, SQL, BigQuery ML, College Basketball Data API
+Python, BigQuery, SQL, BigQuery ML, College Basketball Data API, Google Data Studio

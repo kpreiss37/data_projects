@@ -47,7 +47,8 @@ Since the end of the season, I've spent time making sure that the model will be 
 | `historical_prediction_performance.sql` | Takes the models prediction before the game is played and evaluates it against actual data the next day |
 | `weekly_predictions.sql` | A rolling 7 day window of predictions from the model |
 | `requirements.txt` | Libraries to be installed for automating scripts | 
+| `automation_files` | YAML files to automate the python scripts through GitHub Actions |
 
 ## Tools
 
-Python, BigQuery, SQL, BigQuery ML, College Basketball Data API, Google Data Studio
+Python, BigQuery, SQL, BigQuery ML, College Basketball Data API, Google Data Studio, GitHub Actions, YAML

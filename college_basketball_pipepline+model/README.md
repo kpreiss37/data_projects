@@ -1,54 +1,82 @@
-# Men's college basketball pipeline and prediction model
+# Men's College Basketball Pipeline and Prediction Model
 
-Built an end-to-end data pipeline ingesting from multiple College Basketball Data API endpoints into BigQuery, covering games, team ratings, four-factor stats, and betting lines, each on independent ingestion schedules.
+An end-to-end NCAA men's college basketball data pipeline and point-spread prediction project. Python ingestion scripts pull game results, team ratings, four-factor statistics, and betting lines from the College Basketball Data API and load them into BigQuery. SQL transforms the raw data into point-in-time matchup features, which are used by a BigQuery ML linear regression model to predict home-team margin of victory.
+
+The project also includes automated prediction tracking, performance reporting, and an experimental AI-assisted player availability research workflow.
 
 ## Pipeline overview
 
-Four Python ingestion scripts pull from separate API endpoints and load into BigQuery:
+The pipeline is split across independent Python ingestion scripts, with GitHub Actions handling scheduled runs:
 
-- **Games** -- scores, ELO ratings, home/away context, and game status
-- **Team ratings** -- adjusted offensive and defensive ratings, appended daily with an ingestion timestamp
-- **Team stats** -- four-factor statistics (eFG%, free throw rate, offensive rebounding rate, turnover ratio), appended with ingestion timestamps
-- **Betting lines** -- spreads, moneylines, and over/unders for each game, exploded from a nested lines array into a flat table
+| Data source | Ingestion | Description |
+|---|---|---|
+| Games | Daily | Final scores, ELO ratings, home/away context, conferences, and game status |
+| Betting lines | Daily | Spreads, moneylines, and over/unders, flattened from the API's nested lines structure |
+| Team ratings | Twice weekly | Adjusted offensive, defensive, and net ratings, stored with ingestion timestamps |
+| Team stats | Twice weekly | Four-factor statistics: effective field goal percentage, free throw rate, offensive rebounding rate, and turnover ratio |
+
+Each source is ingested independently so that the pipeline can refresh on different schedules without requiring a full reload.
 
 ## Feature engineering
 
-The core modeling challenge was temporal: each game needed to be joined to the most recent ratings and stats available before it was played, not season-end figures. A naive join would leak future data into the training set.
+The main data challenge is making sure every historical matchup only uses information that would have been available before the game was played. Joining games to the latest team ratings or statistics without accounting for when those values were ingested would introduce future data leakage.
 
-The solution was a point-in-time join pattern using ingestion timestamps. For each game, the pipeline identifies the latest ratings and stats snapshot with an ingestion date on or before the game date, then joins on that specific snapshot. This is implemented in `stats_and_matchups.sql`.
+The SQL transformation in `stats_and_matchups.sql` uses a point-in-time join pattern. For each matchup, it identifies the latest ratings and team-stat snapshots ingested on or before the game date, then joins those snapshots to the game.
 
-The final dataset includes:
+The resulting matchup dataset includes features such as:
 
-- Adjusted net rating differential between home and away teams
-- Four-factor differentials (eFG%, free throw rate, offensive rebounding %, turnover ratio)
-- Days of rest for each team
-- Rolling win percentage over the last five games
-- Home court indicator
+- Home and away adjusted offensive, defensive, and net ratings
+- Net rating and ELO differentials
+- Four-factor differentials: effective field goal percentage, free throw rate, offensive rebounding rate, and turnover ratio
+- Conference classification and conference-type differential
+- Days of rest and recent rolling win percentage
+- Home-court indicator
 - Vegas spread
 
-## Model
+This approach allows the training data to reflect the information available at the time of each game rather than relying on end-of-season statistics.
 
-A linear regression model was trained in BigQuery ML (`ml_model.sql`) to predict the home team's margin of victory. Games with margins greater than 35 points were excluded from training to reduce noise.
+## Prediction model
 
-This model was first made at the tail end of the 2025 season, but with limited historical data on ratings and team stats, the model achieved an R² of 0.29.
+A linear regression model is trained in BigQuery ML to predict the home team's margin of victory. The training query excludes games with margins greater than 35 points to limit the influence of extreme blowouts.
 
-Since the end of the season, I've spent time making sure that the model will be fully automated for future years so the dataset can continuously grow. You can view this season's performance in this [Google Data Studio dashboard](https://datastudio.google.com/reporting/bfc031e1-ad85-4daa-9521-8fd2e26a3e90).
+The model is evaluated against actual game results after games are completed. Historical predictions and outcomes are retained so performance can be reviewed over time, rather than evaluating the model only on the data used to train it.
 
-## Files
+Two SQL workflows support the prediction process:
+
+- `ml_model.sql` trains the model and generates predictions.
+- `weekly_predictions.sql` creates a rolling seven-day view of upcoming matchups and model predictions.
+
+## Automation and monitoring
+
+GitHub Actions automates the ingestion scripts using scheduled workflows. Google Cloud authentication uses Workload Identity Federation, so service account key files do not need to be stored in the repository.
+
+The project also includes a performance notification script that queries completed predictions in BigQuery and sends a daily summary through ntfy. A Looker Studio dashboard provides a view of current-season predictions and performance.
+
+[View the current-season prediction dashboard](https://datastudio.google.com/reporting/bfc031e1-ad85-4daa-9521-8fd2e26a3e90)
+
+## AI-assisted player availability research
+
+An additional workflow explores using AI and web search to research player availability for the day's matchups. It checks for reported injuries and uncertain availability among meaningful rotation players, then writes team-level flags to BigQuery.
+
+The flags are intended to identify games that warrant additional review. They are a due-diligence aid, not an automatic prediction adjustment or a substitute for evaluating the underlying reports.
+
+## Repository files
 
 | File | Description |
-|------|-------------|
-| `ingest_games.py` | Pulls game results from the API and loads to BigQuery |
-| `ingest_team_ratings.py` | Pulls adjusted ratings and appends with ingestion timestamp |
-| `ingest_team_stats.py` | Pulls four-factor stats and appends with ingestion timestamp |
-| `ingest_betting_lines.py` | Pulls betting lines and explodes nested structure into flat table |
-| `stats_and_matchups.sql` | Point-in-time feature engineering and matchup assembly |
-| `ml_model.sql` | BigQuery ML model training and prediction queries |
-| `historical_prediction_performance.sql` | Takes the models prediction before the game is played and evaluates it against actual data the next day |
-| `weekly_predictions.sql` | A rolling 7 day window of predictions from the model |
-| `requirements.txt` | Libraries to be installed for automating scripts | 
-| `automation_files` | YAML files to automate the python scripts through GitHub Actions |
+|---|---|
+| `ingest_games.py` | Pulls game results and team/game context from the API into BigQuery |
+| `ingest_team_ratings.py` | Pulls adjusted team ratings and appends timestamped snapshots |
+| `ingest_team_stats.py` | Pulls four-factor team statistics and appends timestamped snapshots |
+| `ingest_betting_lines.py` | Pulls betting lines and flattens the nested API response |
+| `stats_and_matchups.sql` | Builds the game dataset and performs point-in-time feature engineering |
+| `ml_model.sql` | Trains the BigQuery ML regression model and generates predictions |
+| `weekly_predictions.sql` | Builds the rolling seven-day prediction dataset |
+| `historical_prediction_performance.sql` | Compares pregame predictions with actual results after games are completed |
+| `ai_injuries_reingest.py` | Experimental AI-assisted player availability research and BigQuery flag output |
+| `performance_notification.py` | Queries recent model performance and sends a notification through ntfy |
+| `requirements.txt` | Python dependencies for the ingestion and automation scripts |
+| `automation_files/` | GitHub Actions workflow definitions for scheduled jobs |
 
 ## Tools
 
-Python, BigQuery, SQL, BigQuery ML, College Basketball Data API, Google Data Studio, GitHub Actions, YAML
+Python, SQL, BigQuery, BigQuery ML, pandas, College Basketball Data API, GitHub Actions, Google Cloud Workload Identity Federation, Looker Studio, ntfy

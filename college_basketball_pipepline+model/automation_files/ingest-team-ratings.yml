@@ -2,7 +2,7 @@ name: Ingest Team Ratings
 
 on:
   schedule:
-    - cron: '12 05 * * 1'
+    - cron: '12 02 * * 1,4'
   workflow_dispatch: {}    # lets you trigger it manually from the Actions tab
 
 jobs:

@@ -2,7 +2,7 @@ name: Ingest Betting Lines
 
 on:
   schedule:
-    - cron: '12 5 * * *'
+    - cron: '12 2 * * *'
   workflow_dispatch: {}
 
 jobs:

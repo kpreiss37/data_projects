@@ -2,7 +2,7 @@ name: Ingest Games
 
 on:
   schedule:
-    - cron: '12 05 * * *'
+    - cron: '12 02 * * *'
   workflow_dispatch: {}
 
 jobs:

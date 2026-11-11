@@ -7,24 +7,40 @@ away_team,
 CAST(predicted_home_team_margin AS FLOAT64) predicted_home_team_spread,
 CAST(spread as FLOAT64) spread,
 home_team_margin,
+    CASE
+        WHEN spread IS NULL THEN 0
+        WHEN ABS(
+            predicted_home_team_margin + CAST(spread AS FLOAT64)
+        ) >= 3 THEN 1
+        ELSE 0
+    END AS place_bet,
 CASE
-    WHEN spread IS NULL THEN 0
-    WHEN ABS(
-        predicted_home_team_margin * -1
-        - CAST(spread AS FLOAT64)
-    ) >= 3 THEN 1
-    ELSE 0
-END AS place_bet,
-CASE
-    WHEN predicted_home_team_margin*-1 < CAST(spread AS FLOAT64)
-        THEN CONCAT(home_team, ' ', CAST(spread AS STRING))
-    WHEN predicted_home_team_margin*-1 > CAST(spread AS FLOAT64)
-        THEN CONCAT(away_team, ' ', CAST(CAST(spread AS FLOAT64) * -1 AS STRING))
+    WHEN predicted_home_team_margin + CAST(spread AS FLOAT64) > 0
+        THEN CONCAT(
+            home_team, ' ',
+            CASE
+                WHEN CAST(spread AS FLOAT64) > 0 THEN '+'
+                ELSE ''
+            END,
+            CAST(spread AS STRING)
+        )
+
+    WHEN predicted_home_team_margin + CAST(spread AS FLOAT64) < 0
+        THEN CONCAT(
+            away_team, ' ',
+            CASE
+                WHEN CAST(spread AS FLOAT64) < 0 THEN '+'
+                ELSE ''
+            END,
+            CAST(CAST(spread AS FLOAT64) * -1 AS STRING)
+        )
+
+    ELSE 'No Edge'
 END AS bet
 FROM ML.PREDICT(MODEL `mbb.rating_regression`,
    (
        SELECT
-       home_net_diff
+       home_net_diff,
        home_game,
        rest_diff,
        form_diff,

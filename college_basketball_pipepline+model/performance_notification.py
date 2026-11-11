@@ -22,7 +22,27 @@ END),2) return
  AND start_date = DATE_ADD(current_date(), INTERVAL -1 DAY)
 """
 
+sql_dev = """
+SELECT 
+SUM(CASE WHEN bet_result = 'WIN' THEN 1 ELSE 0 END) won_bets,
+SUM(CASE WHEN bet_result = 'LOSS' THEN 1 ELSE 0 END) lost_bets,
+SUM(CASE WHEN bet_result = 'PUSH' THEN 1 ELSE 0 END) push_bets,
+ROUND(SUM(
+CASE
+  WHEN bet_result = "WIN" THEN 0.9091
+  WHEN bet_result = "LOSS" THEN -1
+  WHEN bet_result = "PUSH" THEN 0
+  ELSE 0
+END),2) return
+ FROM `project-bf3ebdef-3dea-4c35-a21.mbb.prediction performance_dev_model`
+ WHERE 1=1
+ AND place_bet = 1
+ AND start_date = DATE_ADD(current_date(), INTERVAL -1 DAY)
+"""
+
 table = pandas_gbq.read_gbq(sql,project_id=project_id)
+
+devtable = pandas_gbq.read_gbq(sql_dev,project_id=project_id)
 
 requests.post("https://ntfy.sh/kevinpreisscollegehoopsperformance",
     data=f"Live: {table['won_bets'][0]}-{table['lost_bets'][0]}-{table['push_bets'][0]}  {table['return'][0]}u\n\n"

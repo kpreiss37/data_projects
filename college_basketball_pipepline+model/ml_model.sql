@@ -5,7 +5,7 @@ input_label_cols=['home_team_margin']
 ) AS
 SELECT
 home_team_margin,
-(PREDICTION FEATURES)
+(MODEL FEATURES)
 FROM
 `PROJECT.DATASET.games_rated`
 WHERE 1=1

@@ -8,15 +8,18 @@ WITH unioned AS (
         IF(neutralsite = FALSE, 1, 0) AS home_game,
         hometeamid AS home_team_id,
         hometeam AS home_team,
+        homeconference AS home_conference,
         homepoints AS home_points,
         CAST(hometeamelostart AS INT64) AS home_elo,
         awayteamid AS away_team_id,
         awayteam AS away_team,
+        awayconference AS away_conference,
         awaypoints AS away_points,
         CAST(awayteamelostart AS INT64) AS away_elo,
         homepoints - awaypoints AS home_team_margin,
         CAST(hometeamelostart AS INT64) - CAST(awayteamelostart AS INT64) AS home_elo_diff,
-        ROW_NUMBER() OVER (PARTITION BY id) AS game_row_num
+        ROW_NUMBER() OVER (PARTITION BY id) AS game_row_num,
+        TIMESTAMP(startdate) AS game_start_timestamp
     FROM `project-bf3ebdef-3dea-4c35-a21.mbb.games_*`
     WHERE CAST(_TABLE_SUFFIX AS FLOAT64) >= 2026
       AND status NOT IN ('postponed', 'cancelled')
@@ -32,7 +35,33 @@ CREATE OR REPLACE TABLE `project-bf3ebdef-3dea-4c35-a21.mbb.all_games_rated` AS
 
 WITH deduped AS (
     SELECT 
-    *
+    *,
+    CASE
+    WHEN home_conference IN (
+        'ACC',
+        'Big Ten',
+        'Big 12',
+        'SEC',
+        'Big East'
+    ) THEN 2
+
+    WHEN home_conference IS NOT NULL THEN 1
+
+    ELSE 0
+END AS home_conference_type,
+CASE
+    WHEN away_conference IN (
+        'ACC',
+        'Big Ten',
+        'Big 12',
+        'SEC',
+        'Big East'
+    ) THEN 2
+
+    WHEN away_conference IS NOT NULL THEN 1
+
+    ELSE 0
+END AS away_conference_type
     FROM `project-bf3ebdef-3dea-4c35-a21.mbb.all_games` 
     WHERE status NOT IN ('postponed', 'cancelled')
 )
@@ -124,6 +153,7 @@ WITH deduped AS (
         spread,
         ROW_NUMBER() OVER (PARTITION BY gameid ORDER BY gameid) AS row_num
     FROM `project-bf3ebdef-3dea-4c35-a21.mbb.lines`
+    WHERE spread IS NOT NULL
 )
 
 -- Step 1: unpivot games so each team has one row per game
@@ -134,6 +164,7 @@ WITH deduped AS (
         home_team_id AS team_id,
         CASE WHEN home_points > away_points THEN 1 ELSE 0 END AS win
     FROM deduped
+    WHERE status = 'final'
 
     UNION ALL
 
@@ -143,6 +174,7 @@ WITH deduped AS (
         away_team_id AS team_id,
         CASE WHEN away_points > home_points THEN 1 ELSE 0 END AS win
     FROM deduped
+    WHERE status = 'final'
 )
 
 -- Step 2: calculate rolling stats per team
@@ -188,6 +220,7 @@ SELECT
     home_freeThrowRate - away_freeThrowRate ft_rate_diff,
     home_offensiveReboundPct - away_offensiveReboundPct orb_perc_diff,
     home_turnoverRatio - away_turnoverRatio to_ratio_diff,
+    home_conference_type - away_conference_type conference_type_diff,
 FROM away_stats r
 LEFT JOIN lines_dedupe l
     ON r.id = l.gameid

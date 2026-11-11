@@ -4,19 +4,8 @@ model_type='linear_reg',
 input_label_cols=['home_team_margin']
 ) AS
 SELECT
-    -- Team strength features
-    team_strength_features,
-
-    -- Game context
-    game_context_features,
-
-    -- Recent performance
-    form_features,
-
-    -- Efficiency metrics
-    efficiency_features,
-
-    home_team_margin
+home_team_margin,
+(PREDICTION FEATURES)
 FROM
 `PROJECT.DATASET.games_rated`
 WHERE 1=1
